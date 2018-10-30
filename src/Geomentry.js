@@ -20,31 +20,23 @@ export default class Geomentry extends React.Component {
   componentWillMount() {
     loadModules([
       "esri/geometry/SpatialReference",
-      "esri/geometry/Point",
-      "esri/geometry/Mesh",
-      "esri/Graphic",
+      // "esri/geometry/Point",
+      // "esri/geometry/Mesh",
+      // "esri/Graphic",
       "esri/views/3d/externalRenderers"
-    ]).then(
-      ([
+    ]).then(([SpatialReference, externalRenderers]) => {
+      TScene.init(
+        this.props.view,
+        externalRenderers,
         SpatialReference,
-        Point,
-        Mesh,
-        Graphic,
-        externalRenderers
-      ]) => {
-        TScene.init(
-          this.props.view,
-          externalRenderers,
-          SpatialReference,
-          [
-            this.props.position.originX,
-            this.props.position.originY
-          ],
-          this.props.position.size
-        );
-        externalRenderers.add(this.props.view, TScene);
-      }
-    );
+        [
+          this.props.position.originX,
+          this.props.position.originY
+        ],
+        this.props.position.size
+      );
+      externalRenderers.add(this.props.view, TScene);
+    });
   }
 
   makeGraphic(

@@ -22,9 +22,10 @@ export default class View extends React.Component {
     var dis = this.state.size;
     loadModules([
       "esri/geometry/Extent",
-      "esri/geometry/SpatialReference"
+      "esri/geometry/SpatialReference",
+      "esri/layers/VectorTileLayer"
     ])
-      .then(([Extent, SpatialReference]) => {
+      .then(([Extent, SpatialReference, VectorTileLayer]) => {
         this.setState({
           ready: true,
           clippingArea: new Extent({
@@ -43,7 +44,13 @@ export default class View extends React.Component {
             },
             heading: 0, // direction -z
             tilt: 60 // -z:0 - z:180
-          }
+          },
+          layers: [
+            new VectorTileLayer({
+              url:
+                "https://jsapi.maps.arcgis.com/sharing/rest/content/items/75f4dfdff19e445395653121a95a85db/resources/styles/root.json"
+            })
+          ]
         });
         console.log("READEYYYY");
       })
@@ -56,8 +63,9 @@ export default class View extends React.Component {
         <Scene
           style={{ width: "100vw", height: "100vh" }}
           mapProperties={{
-            basemap: "streets-navigation-vector",
-            ground: "world-topobathymetry"
+            //basemap: "streets-night-vector",
+            ground: "world-topobathymetry",
+            layers: this.state.layers
           }}
           viewProperties={{
             clippingArea: this.state.clippingArea,
