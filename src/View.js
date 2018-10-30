@@ -10,13 +10,16 @@ export default class View extends React.Component {
     this.state = {
       ready: false,
       clippingArea: null,
-      graphic: null
+      graphic: null,
+      originX: 13523831,
+      originY: 3655570,
+      size: 5000
     };
   }
   componentWillMount() {
-    var x = 13523831;
-    var y = 3655570;
-    var dis = 5000;
+    var x = this.state.originX;
+    var y = this.state.originY;
+    var dis = this.state.size;
     loadModules([
       "esri/geometry/Extent",
       "esri/geometry/SpatialReference"
@@ -62,7 +65,14 @@ export default class View extends React.Component {
             camera: this.state.camera
           }}
         >
-          <Geomentry extent={this.state.clippingArea} />
+          <Geomentry
+            extent={this.state.clippingArea}
+            position={{
+              originX: this.state.originX,
+              originY: this.state.originY,
+              size: this.state.size
+            }}
+          />
         </Scene>
       );
     } else {

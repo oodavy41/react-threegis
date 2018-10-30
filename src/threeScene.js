@@ -94,15 +94,33 @@ export var TScene = {
         new THREE.MeshNormalMaterial()
       );
       let mobj = new threeObj(m);
-      mobj.obj.position.fromArray(
-        this.tranToArc([
-          Math.random() * this.mapSize,
-          Math.random() * this.mapSize,
-          0
-        ])
+      mobj.position = this.tranToArc([
+        Math.random() * this.mapSize,
+        Math.random() * this.mapSize,
+        0
+      ]);
+      mobj.addAnimi(animateObj.ROT, null, null, null, [
+        0,
+        0,
+        3 * Math.random()
+      ]);
+      mobj.addAnimi(animateObj.SLE, null, [20, 20, 20], 60);
+      mobj.addAnimi(
+        animateObj.ROT,
+        [Math.PI / 2, 0, 0],
+        null,
+        30
       );
-      let mv = new THREE.Vector3(0, 0, 3 * Math.random());
-      mobj.addAnimi(animateObj.ROT, null, null, null, mv);
+      mobj.addAnimi(
+        animateObj.POS,
+        this.tranToArc([
+          5000 * Math.random(),
+          5000 * Math.random(),
+          0
+        ]),
+        null,
+        40
+      );
 
       this.models.push(mobj);
       this.scene.add(mobj.obj);

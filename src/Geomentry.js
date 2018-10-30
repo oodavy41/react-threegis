@@ -36,8 +36,11 @@ export default class Geomentry extends React.Component {
           this.props.view,
           externalRenderers,
           SpatialReference,
-          [13523831, 3655570],
-          5000
+          [
+            this.props.position.originX,
+            this.props.position.originY
+          ],
+          this.props.position.size
         );
         externalRenderers.add(this.props.view, TScene);
       }
