@@ -70,7 +70,16 @@ export default class View extends React.Component {
           viewProperties={{
             clippingArea: this.state.clippingArea,
             viewingMode: "local",
-            camera: this.state.camera
+            camera: this.state.camera,
+            alphaCompositingEnabled: true,
+            environment: {
+              background: {
+                type: "color",
+                color: [155, 152, 144, 0]
+              },
+              starsEnabled: false,
+              atmosphereEnabled: false
+            }
           }}
         >
           <Geomentry

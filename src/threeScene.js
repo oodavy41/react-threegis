@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import * as OBJLoader from "three-obj-loader";
-import { threeObj, animateObj } from "./threeObj";
+import { threeObj, animateObj, aniType } from "./threeObj";
 OBJLoader(THREE);
 
 export var TScene = {
@@ -99,27 +99,22 @@ export var TScene = {
         Math.random() * this.mapSize,
         0
       ]);
-      mobj.addAnimi(animateObj.ROT, null, null, null, [
-        0,
-        0,
-        3 * Math.random()
-      ]);
-      mobj.addAnimi(animateObj.SLE, null, [20, 20, 20], 60);
       mobj.addAnimi(
-        animateObj.ROT,
-        [Math.PI / 2, 0, 0],
-        null,
-        30
+        aniType.ROT,
+        [0, 0, 1.07 * Math.random()],
+        null
       );
+      mobj.addAnimi(aniType.SLE, [0.1, 0.1, 0.1], 20);
+      mobj.addAnimi(aniType.ROT, [Math.PI / 2, 0, 0], 40);
       mobj.addAnimi(
-        animateObj.POS,
-        this.tranToArc([
-          5000 * Math.random(),
-          5000 * Math.random(),
+        aniType.POS,
+        [
+          500 * (1 - Math.random() * 2),
+          500 * (1 - Math.random() * 2),
           0
-        ]),
-        null,
-        40
+        ],
+        200,
+        10
       );
 
       this.models.push(mobj);
