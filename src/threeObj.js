@@ -64,27 +64,79 @@ export class threeObj {
       }
     }
   }
+
   /**
    *
-   * @param {aniType} type
-   * @param {*} dArray if type is color array is target
+   * @param {*} type
+   * @param {*} target
    * @param {*} duration
    * @param {*} wait
+   * @param {*} loop number of times / boolean
+   * @param {*} easing https://github.com/juliangarnier/anime#easing-functions
+   * @param {*} direction 'normal', 'reverse', 'alternate'
+   * @param {*} autoplay
    */
-  addAnimi(type, dArray, duration, wait = 0) {
+  addAnimi(
+    type,
+    target,
+    duration,
+    wait = 0,
+    loop = false,
+    easing = "linear",
+    direction = "alternate",
+    autoplay = true
+  ) {
+    duration *= 1000;
+    wait *= 1000;
     let newAnime;
     switch (type) {
       case aniType.POS:
-        newAnime = new posAnimi(this, dArray, duration, wait);
+        newAnime = new posAnimi(
+          this,
+          target,
+          duration,
+          wait,
+          loop,
+          easing,
+          direction,
+          autoplay
+        );
         break;
       case aniType.ROT:
-        newAnime = new rotAnimi(this, dArray, duration, wait);
+        newAnime = new rotAnimi(
+          this,
+          target,
+          duration,
+          wait,
+          loop,
+          easing,
+          direction,
+          autoplay
+        );
         break;
       case aniType.SLE:
-        newAnime = new sclAnimi(this, dArray, duration, wait);
+        newAnime = new sclAnimi(
+          this,
+          target,
+          duration,
+          wait,
+          loop,
+          easing,
+          direction,
+          autoplay
+        );
         break;
       case aniType.COL:
-        newAnime = new colAnimi(this, dArray, duration, wait);
+        newAnime = new colAnimi(
+          this,
+          target,
+          duration,
+          wait,
+          loop,
+          easing,
+          direction,
+          autoplay
+        );
         break;
     }
     return this._animations.push(newAnime);

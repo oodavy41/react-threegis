@@ -1,34 +1,38 @@
-import { threeObj } from "./threeObj";
+import anime from "animejs";
 class animeObj {
   // delta pre second
-  constructor(obj, delta, duration, wait = 0) {
+  constructor(
+    obj,
+    target,
+    duration,
+    wait = 0,
+    loop = false,
+    easing = "linear",
+    direction = "alternate",
+    autoplay = true
+  ) {
     this.parent = obj;
-    this.duration = duration
-      ? duration
-      : Number.POSITIVE_INFINITY;
-    this.wait = wait;
-    this.life = 0;
-    this.delta = delta;
+    this.anime = anime({
+      targets: this._getT(),
+      x: target[0],
+      y: target[1],
+      z: target[2],
+      easing: easing,
+      direction: direction,
+      loop: loop,
+      duration: duration,
+      delay: wait
+    });
+    this.anime.autoplay = autoplay;
+  }
+  start() {
+    this.anime.play();
   }
 
-  tick(delta) {
-    if (this.wait > 0) {
-      this.wait -= delta;
-      return false;
-    } else if (this.duration > 0) {
-      this.duration -= delta;
-      let _t = this._getT();
-      _t.x += this.delta[0] * delta;
-      _t.y += this.delta[1] * delta;
-      _t.z += this.delta[2] * delta;
-      return false;
-    } else {
-      return true;
-    }
-  }
+  tick(delta) {}
 
   _getT() {
-    console.error("NO USE");
+    console.error("SHOUD'NT USE PROP _getT()");
     return null;
   }
 }
@@ -49,35 +53,36 @@ export class rotAnimi extends animeObj {
   }
 }
 
-export class colAnimi extends animeObj {
-  constructor(obj, target, duration, wait = 0) {
-    this.oldColor = this.parent.obj.material.color;
-    if (this.oldColor && duration) {
-      this.oldColor = this.oldColor.clone();
-      this.life = duration + 0.02;
-      super(obj, target, duration, wait);
+export class colAnimi {
+  constructor(
+    obj,
+    target,
+    duration,
+    wait = 0,
+    loop = false,
+    easing = "linear",
+    direction = "alternate",
+    autoplay = true
+  ) {
+    this.parent = obj;
+    if (this._getT()) {
+      this.anime = anime({
+        targets: this._getT(),
+        r: target[0],
+        g: target[1],
+        b: target[2],
+        easing: easing,
+        direction: direction,
+        loop: loop,
+        duration: duration,
+        delay: wait
+      });
     } else {
       console.log("SETTING COLOR FAIL ! NOT BASIC MATERIAL ");
-      super(obj, target, -1, -1);
     }
   }
 
-  tick(delta) {
-    if (this.wait > 0) {
-      this.wait -= delta;
-      return false;
-    } else if (this.duration > 0) {
-      this.duration -= delta;
-      let _t = this._getT();
-      _t.lerp(
-        this.oldColor,
-        delta / this.life / (1 - this.duration / this.life)
-      );
-      return false;
-    } else {
-      return true;
-    }
-  }
+  tick(delta) {}
 
   _getT() {
     return this.parent.obj.material.color;

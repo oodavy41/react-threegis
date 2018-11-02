@@ -22,14 +22,14 @@ export var TScene = {
 
   models: [],
 
-  init: function(view, render, reference, center, mapSize) {
+  init(view, render, reference, center, mapSize) {
     this.view = view;
     this.arcgisRender = render;
     this.arcgisReference = reference;
     this.origin = { x: center[0], y: center[1] };
     this.mapSize = mapSize;
   },
-  setup: function(context) {
+  setup(context) {
     this.renderer = new THREE.WebGLRenderer({
       context: context.gl,
       premultipliedAlpha: false
@@ -96,27 +96,37 @@ export var TScene = {
         new THREE.MeshNormalMaterial()
       );
       let mobj = new threeObj(m);
-      mobj.position = this.tranToArc([
-        Math.random() * this.mapSize,
-        Math.random() * this.mapSize,
-        0
-      ]);
+      mobj.position = this.tranToArc([100, 700 + i * 700, 0]);
       mobj.addAnimi(
         aniType.ROT,
-        [0, 0, 1.07 * Math.random()],
-        null
+        [0, 0, Math.PI * 2],
+        Math.random() * 5 + 5,
+        0,
+        true,
+        "easeInOutQuart",
+        "normal"
       );
-      mobj.addAnimi(aniType.SLE, [0.1, 0.1, 0.1], 20);
-      mobj.addAnimi(aniType.ROT, [Math.PI / 2, 0, 0], 40);
+      mobj.addAnimi(
+        aniType.SLE,
+        [
+          Math.random() * 3,
+          Math.random() * 3,
+          Math.random() * 3
+        ],
+        10
+      );
       mobj.addAnimi(
         aniType.POS,
-        [
-          100 * (1 - Math.random() * 2),
-          100 * (1 - Math.random() * 2),
+        this.tranToArc([
+          Math.random() * this.mapSize,
+          700 * (i + 1),
           0
-        ],
-        20,
-        10
+        ]),
+        10 * Math.random() + 10,
+        10 * Math.random(),
+        true,
+        "easeInOutBack",
+        "normal"
       );
 
       this.models.push(mobj);
@@ -148,6 +158,22 @@ export var TScene = {
         50 + 100 * Math.random(),
         0.3
       );
+      let dothalfm = new threeObj(dothalf);
+      dothalfm.addAnimi(
+        aniType.COL,
+        [Math.random(), Math.random(), Math.random()],
+        5,
+        0,
+        true
+      );
+      dothalfm.addAnimi(
+        aniType.SLE,
+        [1.1, 1.1, 1],
+        1,
+        0.5 + Math.random(),
+        true,
+        "easeOutBack"
+      );
       this.scene.add(dot1);
       this.scene.add(dothalf);
     }
@@ -166,7 +192,7 @@ export var TScene = {
     var light = new THREE.DirectionalLight(0x202020);
     this.scene.add(light);
   },
-  render: function(context) {
+  render(context) {
     var delta = this.clock.getDelta();
     var time = this.clock.getElapsedTime();
 
@@ -210,7 +236,7 @@ export var TScene = {
     context.resetWebGLState();
   },
 
-  tranToArc: function(renderPos) {
+  tranToArc(renderPos) {
     var pos = [
       renderPos[0] + this.origin.x,
       renderPos[1] + this.origin.y,
@@ -227,7 +253,7 @@ export var TScene = {
     );
     return pos;
   },
-  makeOrigin: function() {
+  makeOrigin() {
     var cubex = new THREE.Mesh(
       new THREE.BoxGeometry(100, 10, 10),
       new THREE.MeshBasicMaterial({ color: 0xff0000 })
