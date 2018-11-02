@@ -96,7 +96,7 @@ export var TScene = {
         new THREE.MeshNormalMaterial()
       );
       let mobj = new threeObj(m);
-      mobj.position = this.tranToArc([100, 700 + i * 700, 0]);
+      mobj.position = this.tranToArc([500, 700 + i * 700, 0]);
       mobj.addAnimi(
         aniType.ROT,
         [0, 0, Math.PI * 2],
@@ -168,7 +168,7 @@ export var TScene = {
       );
       dothalfm.addAnimi(
         aniType.SLE,
-        [1.1, 1.1, 1],
+        [1.3, 1.3, 1],
         1,
         0.5 + Math.random(),
         true,
