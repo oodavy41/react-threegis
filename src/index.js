@@ -64,7 +64,7 @@ class View extends React.Component {
     if (this.state.ready) {
       return (
         <Scene
-          style={{ width: "100vw", height: "100vh" }}
+          style={{ width: "1000px", height: "1000px" }}
           mapProperties={{
             //basemap: "streets-night-vector",
             ground: "world-topobathymetry",

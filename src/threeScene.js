@@ -10,6 +10,8 @@ export var TScene = {
   arcgisRender: null,
   arcgisReference: null,
 
+  mapSize: 0,
+
   renderer: null,
   camera: null,
   scene: null,
@@ -109,16 +111,45 @@ export var TScene = {
       mobj.addAnimi(
         aniType.POS,
         [
-          500 * (1 - Math.random() * 2),
-          500 * (1 - Math.random() * 2),
+          100 * (1 - Math.random() * 2),
+          100 * (1 - Math.random() * 2),
           0
         ],
-        200,
+        20,
         10
       );
 
       this.models.push(mobj);
       this.scene.add(mobj.obj);
+    }
+
+    let line8 = this.makeLine(
+      [
+        [0, 0, 0],
+        [4500, 4500, 100],
+        [4000, 2000, 200],
+        [100, 4900, 300]
+      ],
+      0xffffff,
+      true
+    );
+    this.scene.add(line8);
+
+    for (let i = 0; i < 20; i++) {
+      let pos = [
+        Math.random() * this.mapSize,
+        Math.random() * this.mapSize,
+        10
+      ];
+      let dot1 = this.makeDot(pos, 0x9999ee, 50);
+      let dothalf = this.makeDotTransport(
+        pos,
+        0x9999ee,
+        50 + 100 * Math.random(),
+        0.3
+      );
+      this.scene.add(dot1);
+      this.scene.add(dothalf);
     }
 
     let m = new THREE.Mesh(
@@ -225,5 +256,44 @@ export var TScene = {
       this.tranToArc([center, center, 150])
     );
     this.scene.add(cubez);
+  },
+
+  makeLine(array, color, loop) {
+    let lineGeomentry = new THREE.Geometry();
+    array.forEach(element => {
+      lineGeomentry.vertices.push(
+        new THREE.Vector3().fromArray(this.tranToArc(element))
+      );
+    });
+    if (loop) {
+      return new THREE.LineLoop(
+        lineGeomentry,
+        new THREE.LineBasicMaterial({ color: color })
+      );
+    } else {
+      return new THREE.Line(
+        lineGeomentry,
+        new THREE.LineBasicMaterial({ color: color })
+      );
+    }
+  },
+
+  makeDot(location, color, radius) {
+    let geometry = new THREE.CircleBufferGeometry(radius, 32);
+    let material = new THREE.MeshBasicMaterial({ color: color });
+    let dot = new THREE.Mesh(geometry, material);
+    dot.position.fromArray(this.tranToArc(location));
+    return dot;
+  },
+  makeDotTransport(location, color, radius, opacity) {
+    let geometry = new THREE.CircleBufferGeometry(radius, 32);
+    let material = new THREE.MeshBasicMaterial({
+      color: color,
+      transparent: true,
+      opacity: opacity
+    });
+    let dot = new THREE.Mesh(geometry, material);
+    dot.position.fromArray(this.tranToArc(location));
+    return dot;
   }
 };
