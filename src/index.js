@@ -7,6 +7,9 @@ import { Map } from "react-arcgis";
 import Geomentry from "./Geomentry";
 import { loadModules } from "react-arcgis";
 
+export let localUrl =
+  // "http://10.10.15.6:8080/arcgis_js_api/library/4.9/";
+  null;
 class View extends React.Component {
   constructor(props) {
     super(props);
@@ -18,16 +21,27 @@ class View extends React.Component {
       originY: 3655570,
       size: 5000
     };
+    this.ref = null;
+    this.mousePos = { x: 0, y: 0 };
+    this.mouseInfos = {
+      start: null,
+      end: null,
+      readState: false,
+      chooseState: false
+    };
   }
   componentWillMount() {
     var x = this.state.originX;
     var y = this.state.originY;
     var dis = this.state.size;
-    loadModules([
-      "esri/geometry/Extent",
-      "esri/geometry/SpatialReference",
-      "esri/layers/VectorTileLayer"
-    ])
+    loadModules(
+      [
+        "esri/geometry/Extent",
+        "esri/geometry/SpatialReference",
+        "esri/layers/VectorTileLayer"
+      ],
+      { url: localUrl }
+    )
       .then(([Extent, SpatialReference, VectorTileLayer]) => {
         this.setState({
           ready: true,
@@ -60,10 +74,40 @@ class View extends React.Component {
       .catch(err => console.error(err));
   }
 
+  onMouseMove = event => {
+    if (!this.ref) return;
+    this.mousePos.x = event.x / this.ref.clientWidth;
+    this.mousePos.y = event.y / this.ref.clientHeight;
+  };
+
+  componentDidUpdate() {
+    if (!this.ref) {
+      this.ref = ReactDOM.findDOMNode(this);
+    }
+  }
+
+  onClick = () => {
+    if (!this.ref) return;
+    console.log(
+      "index.choosestate",
+      this.mouseInfos.chooseState
+    );
+    if (!this.mouseInfos.chooseState) {
+      this.mouseInfos.start = [this.mousePos.x, this.mousePos.y];
+    } else {
+      this.mouseInfos.end = [this.mousePos.x, this.mousePos.y];
+      this.mouseInfos.readState = true;
+    }
+    this.mouseInfos.chooseState = !this.mouseInfos.chooseState;
+  };
+
   render() {
     if (this.state.ready) {
       return (
         <Scene
+          loaderOptions={{
+            url: localUrl
+          }}
           style={{ width: "1000px", height: "1000px" }}
           mapProperties={{
             //basemap: "streets-night-vector",
@@ -84,8 +128,12 @@ class View extends React.Component {
               atmosphereEnabled: false
             }
           }}
+          onPointerMove={this.onMouseMove}
+          onClick={this.onClick}
         >
           <Geomentry
+            mousePos={this.mouseInfos}
+            presentPos={this.mousePos}
             extent={this.state.clippingArea}
             position={{
               originX: this.state.originX,

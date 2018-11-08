@@ -2,7 +2,8 @@ import * as React from "react";
 import { loadModules } from "react-arcgis";
 import * as THREE from "three";
 import * as OBJLoader from "three-obj-loader";
-import { TScene } from "./threeScene";
+import TScene from "./threeScene";
+import { localUrl } from "./index";
 OBJLoader(THREE);
 
 export default class Geomentry extends React.Component {
@@ -11,6 +12,7 @@ export default class Geomentry extends React.Component {
     this.state = {
       counter: 0
     };
+    this.TScene = null;
   }
 
   render() {
@@ -18,14 +20,17 @@ export default class Geomentry extends React.Component {
   }
 
   componentWillMount() {
-    loadModules([
-      "esri/geometry/SpatialReference",
-      // "esri/geometry/Point",
-      // "esri/geometry/Mesh",
-      // "esri/Graphic",
-      "esri/views/3d/externalRenderers"
-    ]).then(([SpatialReference, externalRenderers]) => {
-      TScene.init(
+    loadModules(
+      [
+        "esri/geometry/SpatialReference",
+        // "esri/geometry/Point",
+        // "esri/geometry/Mesh",
+        // "esri/Graphic",
+        "esri/views/3d/externalRenderers"
+      ],
+      { url: localUrl }
+    ).then(([SpatialReference, externalRenderers]) => {
+      this.TScene = new TScene(
         this.props.view,
         externalRenderers,
         SpatialReference,
@@ -35,7 +40,11 @@ export default class Geomentry extends React.Component {
         ],
         this.props.position.size
       );
-      externalRenderers.add(this.props.view, TScene);
+      this.TScene.setMousePos(
+        this.props.mousePos,
+        this.props.presentPos
+      );
+      externalRenderers.add(this.props.view, this.TScene);
     });
   }
 
