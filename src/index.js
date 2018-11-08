@@ -19,8 +19,10 @@ class View extends React.Component {
       graphic: null,
       originX: 13523831,
       originY: 3655570,
-      size: 5000
+      size: 5000,
+      FPS: 0
     };
+    this.fraps = { time: 0, count: 0 };
     this.ref = null;
     this.mousePos = { x: 0, y: 0 };
     this.mouseInfos = {
@@ -86,20 +88,35 @@ class View extends React.Component {
     }
   }
 
-  onClick = () => {
+  onClick = event => {
     if (!this.ref) return;
     console.log(
       "index.choosestate",
       this.mouseInfos.chooseState
     );
     if (!this.mouseInfos.chooseState) {
-      this.mouseInfos.start = [this.mousePos.x, this.mousePos.y];
+      this.mouseInfos.start = [
+        event.screenPoint.x / this.ref.clientWidth,
+        event.screenPoint.y / this.ref.clientHeight
+      ];
     } else {
-      this.mouseInfos.end = [this.mousePos.x, this.mousePos.y];
+      this.mouseInfos.end = [
+        event.screenPoint.x / this.ref.clientWidth,
+        event.screenPoint.y / this.ref.clientHeight
+      ];
       this.mouseInfos.readState = true;
     }
     this.mouseInfos.chooseState = !this.mouseInfos.chooseState;
   };
+  computeFPS = (delta => {
+    if (!this.fraps) return;
+    this.fraps.time += delta;
+    this.fraps.count++;
+    if (this.fraps.count >= 10) {
+      this.setState({ FPS: 10 / this.fraps.time });
+      this.fraps.count = this.fraps.time = 0;
+    }
+  }).bind(this);
 
   render() {
     if (this.state.ready) {
@@ -131,7 +148,18 @@ class View extends React.Component {
           onPointerMove={this.onMouseMove}
           onClick={this.onClick}
         >
+          <div
+            style={{
+              position: "absolute",
+              background: "rgba(0,0,0,0.2)",
+              left: 0,
+              top: 0
+            }}
+          >
+            FPS:{"" + this.state.FPS}
+          </div>
           <Geomentry
+            updateFPS={this.computeFPS}
             mousePos={this.mouseInfos}
             presentPos={this.mousePos}
             extent={this.state.clippingArea}

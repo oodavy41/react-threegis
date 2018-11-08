@@ -44,6 +44,7 @@ export default class Geomentry extends React.Component {
         this.props.mousePos,
         this.props.presentPos
       );
+      this.TScene.updateFPS = this.props.updateFPS;
       externalRenderers.add(this.props.view, this.TScene);
     });
   }

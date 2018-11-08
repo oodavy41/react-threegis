@@ -10,6 +10,7 @@ export default class TScene {
   view = null;
   arcgisRender = null;
   arcgisReference = null;
+  updateFPS = null;
 
   mapSize = 0;
 
@@ -260,6 +261,9 @@ export default class TScene {
   render(context) {
     var delta = this.clock.getDelta();
     var time = this.clock.getElapsedTime();
+    if (this.updateFPS) {
+      this.updateFPS(delta);
+    }
 
     var cam = context.camera;
 
