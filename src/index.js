@@ -108,7 +108,7 @@ class View extends React.Component {
     }
     this.mouseInfos.chooseState = !this.mouseInfos.chooseState;
   };
-  computeFPS = (delta => {
+  computeFPS = delta => {
     if (!this.fraps) return;
     this.fraps.time += delta;
     this.fraps.count++;
@@ -116,7 +116,7 @@ class View extends React.Component {
       this.setState({ FPS: 10 / this.fraps.time });
       this.fraps.count = this.fraps.time = 0;
     }
-  }).bind(this);
+  };
 
   render() {
     if (this.state.ready) {
@@ -151,12 +151,13 @@ class View extends React.Component {
           <div
             style={{
               position: "absolute",
-              background: "rgba(0,0,0,0.2)",
+              color: "#f2f2f2",
+              background: "rgba(0,0,0,0.4)",
               left: 0,
               top: 0
             }}
           >
-            FPS:{"" + this.state.FPS}
+            FPS:{parseInt(this.state.FPS)}
           </div>
           <Geomentry
             updateFPS={this.computeFPS}
