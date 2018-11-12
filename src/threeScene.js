@@ -2,6 +2,8 @@ import * as THREE from "three";
 import * as OBJLoader from "three-obj-loader";
 import { threeObj, animateObj, aniType } from "./threeObj";
 import { Map } from "react-arcgis";
+import meshBuilder from "./threeMesh";
+import { tranToArc } from "./arcTools";
 OBJLoader(THREE);
 
 export default class TScene {
@@ -11,6 +13,7 @@ export default class TScene {
   arcgisRender = null;
   arcgisReference = null;
   updateFPS = null;
+  TMB = null;
 
   mapSize = 0;
 
@@ -49,6 +52,7 @@ export default class TScene {
     this.materials["brightRed"] = new THREE.MeshBasicMaterial({
       color: "red"
     });
+    this.TMB = new meshBuilder(this);
   }
   setup(context) {
     this.renderer = new THREE.WebGLRenderer({
@@ -87,7 +91,7 @@ export default class TScene {
       new THREE.MeshBasicMaterial({ color: "pink" })
     );
     this.terraria.position.fromArray(
-      this.tranToArc([this.mapSize / 2, this.mapSize / 2, -10])
+      tranToArc(this, [this.mapSize / 2, this.mapSize / 2, -10])
     );
     this.scene.add(this.terraria);
 
@@ -106,7 +110,7 @@ export default class TScene {
     );
 
     this.choosePlane.position.fromArray(
-      this.tranToArc([300, 300, 50])
+      tranToArc(this, [300, 300, 50])
     );
     this.choosePlane.scale.fromArray([1, 1, 0]);
     this.scene.add(this.choosePlane);
@@ -146,7 +150,7 @@ export default class TScene {
         new THREE.MeshNormalMaterial()
       );
       let mobj = new threeObj(m);
-      mobj.position = this.tranToArc([500, 700 + i * 700, 0]);
+      mobj.position = tranToArc(this, [500, 700 + i * 700, 0]);
       mobj.addAnimi(
         aniType.ROT,
         [0, 0, Math.PI * 2],
@@ -167,7 +171,7 @@ export default class TScene {
       );
       mobj.addAnimi(
         aniType.POS,
-        this.tranToArc([
+        tranToArc(this, [
           Math.random() * this.mapSize,
           700 * (i + 1),
           0
@@ -182,7 +186,7 @@ export default class TScene {
       this.scene.add(mobj.obj);
     }
 
-    let line8 = this.makeLine(
+    let line8 = this.TMB.makeLine(
       [
         {
           start: [0, 0, 50],
@@ -216,8 +220,8 @@ export default class TScene {
         Math.random() * this.mapSize,
         5 + 10 * Math.random()
       ];
-      let dot1 = this.makeDot(pos, 0x9999ee, 50);
-      let dothalf = this.makeDotTransport(
+      let dot1 = this.TMB.makeDot(pos, 0x9999ee, 50);
+      let dothalf = this.TMB.makeDotTransport(
         pos,
         0x9999ee,
         70 + 50 * Math.random(),
@@ -251,7 +255,7 @@ export default class TScene {
       new THREE.MeshNormalMaterial()
     );
 
-    m.position.fromArray(this.tranToArc([300, 300, 0]));
+    m.position.fromArray(tranToArc(this, [300, 300, 0]));
     this.scene.add(m);
 
     this.makeOrigin(this.scene);
@@ -294,7 +298,7 @@ export default class TScene {
         dis + 1000 * Math.sin(time / 3),
         100
       ];
-      this.model.position.fromArray(this.tranToArc(renderPos));
+      this.model.position.fromArray(tranToArc(this, renderPos));
     }
 
     this.rayCast();
@@ -311,23 +315,6 @@ export default class TScene {
     context.resetWebGLState();
   }
 
-  tranToArc(renderPos) {
-    var pos = [
-      renderPos[0] + this.origin.x,
-      renderPos[1] + this.origin.y,
-      renderPos[2]
-    ];
-    this.arcgisRender.toRenderCoordinates(
-      this.view,
-      pos,
-      0,
-      this.arcgisReference.WebMercator,
-      pos,
-      0,
-      1
-    );
-    return pos;
-  }
   makeOrigin() {
     var cubex = new THREE.Mesh(
       new THREE.BoxGeometry(100, 10, 10),
@@ -346,15 +333,15 @@ export default class TScene {
 
     var center = 100;
     cubex.position.fromArray(
-      this.tranToArc([center + 50, center, 100])
+      tranToArc(this, [center + 50, center, 100])
     );
     this.scene.add(cubex);
     cubey.position.fromArray(
-      this.tranToArc([center, center + 50, 100])
+      tranToArc(this, [center, center + 50, 100])
     );
     this.scene.add(cubey);
     cubez.position.fromArray(
-      this.tranToArc([center, center, 150])
+      tranToArc(this, [center, center, 150])
     );
     this.scene.add(cubez);
   }
@@ -364,95 +351,7 @@ export default class TScene {
    * @param {*} array [{start:[x,y,z],end:[x,y,z],size:widthNumber},...]
    * @param {*} color
    */
-  makeLine(array, color) {
-    let lineGeomentry = new THREE.Geometry();
-    array.forEach(element => {
-      let start = element.start;
-      let end = element.end;
-      let width = element.size / 2;
-      let angle = Math.atan2(
-        end[1] - start[1],
-        end[0] - start[0]
-      );
-      let pos = lineGeomentry.vertices.length;
-      let dx = width * Math.sin(angle);
-      let dy = width * Math.cos(angle);
-      lineGeomentry.vertices.push(
-        new THREE.Vector3().fromArray(
-          this.tranToArc([
-            start[0] + dx,
-            start[1] - dy,
-            start[2]
-          ])
-        ),
-        new THREE.Vector3().fromArray(
-          this.tranToArc([
-            start[0] - dx,
-            start[1] + dy,
-            start[2]
-          ])
-        ),
-        new THREE.Vector3().fromArray(
-          this.tranToArc([end[0] + dx, end[1] - dy, end[2]])
-        ),
-        new THREE.Vector3().fromArray(
-          this.tranToArc([end[0] - dx, end[1] + dy, end[2]])
-        ),
-        new THREE.Vector3().fromArray(this.tranToArc(start))
-      );
-      for (let i = 0; i < 16; i++) {
-        lineGeomentry.vertices.push(
-          new THREE.Vector3().fromArray(
-            this.tranToArc([
-              start[0] + width * Math.sin((Math.PI * i) / 8),
-              start[1] + width * Math.cos((Math.PI * i) / 8),
-              start[2]
-            ])
-          )
-        );
-      }
-      lineGeomentry.faces.push(
-        new THREE.Face3(pos, pos + 2, pos + 1),
-        new THREE.Face3(pos + 1, pos + 2, pos + 3)
-      );
 
-      for (let i = 0; i < 16; i++) {
-        lineGeomentry.faces.push(
-          new THREE.Face3(
-            pos + 4,
-            i < 15 ? pos + 6 + i : pos + 5,
-            pos + 5 + i
-          )
-        );
-      }
-    });
-
-    return new THREE.Mesh(
-      lineGeomentry,
-      new THREE.MeshBasicMaterial({ color: color })
-    );
-  }
-
-  makeDot(location, color, radius) {
-    let geometry = new THREE.CircleBufferGeometry(radius, 32);
-    let material = new THREE.MeshBasicMaterial({ color: color });
-    let dot = new THREE.Mesh(geometry, material);
-    dot.baseMat = material;
-    dot.choseMat = this.materials.brightRed;
-    dot.position.fromArray(this.tranToArc(location));
-    return dot;
-  }
-  makeDotTransport(location, color, radius, opacity) {
-    let geometry = new THREE.CircleBufferGeometry(radius, 32);
-    let material = new THREE.MeshBasicMaterial({
-      color: color,
-      transparent: true,
-      opacity: opacity
-    });
-    let dot = new THREE.Mesh(geometry, material);
-    dot.position.fromArray(this.tranToArc(location));
-    return dot;
-  }
   rayCast() {
     let my = this.chooseRange;
     let pa = this.mousePoses;
