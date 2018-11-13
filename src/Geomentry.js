@@ -3,7 +3,6 @@ import { loadModules } from "react-arcgis";
 import * as THREE from "three";
 import * as OBJLoader from "three-obj-loader";
 import TScene from "./threeScene";
-import { localUrl } from "./index";
 OBJLoader(THREE);
 
 export default class Geomentry extends React.Component {
@@ -28,7 +27,7 @@ export default class Geomentry extends React.Component {
         // "esri/Graphic",
         "esri/views/3d/externalRenderers"
       ],
-      { url: localUrl }
+      { url: null }
     ).then(([SpatialReference, externalRenderers]) => {
       this.TScene = new TScene(
         this.props.view,
