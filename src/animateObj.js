@@ -93,7 +93,9 @@ export class recAnimi {
     thisTick = { x: 0, y: 0, z: 0 };
     lastTick = { x: 0, y: 0, z: 0 };
     result = [0, 0, 0];
+    isScale = false;
     constructor(
+        isScale,
         obj,
         animeFun,
         duration,
@@ -104,6 +106,14 @@ export class recAnimi {
         direction = "alternate",
         autoplay = true
     ) {
+        this.isScale = isScale;
+        if (isScale) {
+            this.thisTick = { x: 1, y: 1, z: 1 };
+            this.lastTick = { x: 1, y: 1, z: 1 };
+        } else {
+            this.thisTick = { x: 0, y: 0, z: 0 };
+            this.lastTick = { x: 0, y: 0, z: 0 };
+        }
         this.parent = obj;
         this.anime = anime({
             targets: this.thisTick,
@@ -123,9 +133,15 @@ export class recAnimi {
     }
 
     tick() {
-        this.result[0] = this.thisTick.x - this.lastTick.x;
-        this.result[1] = this.thisTick.y - this.lastTick.y;
-        this.result[2] = this.thisTick.z - this.lastTick.z;
+        if (this.isScale) {
+            this.result[0] = this.thisTick.x / this.lastTick.x;
+            this.result[1] = this.thisTick.y / this.lastTick.y;
+            this.result[2] = this.thisTick.z / this.lastTick.z;
+        } else {
+            this.result[0] = this.thisTick.x - this.lastTick.x;
+            this.result[1] = this.thisTick.y - this.lastTick.y;
+            this.result[2] = this.thisTick.z - this.lastTick.z;
+        }
         this.lastTick.x = this.thisTick.x;
         this.lastTick.y = this.thisTick.y;
         this.lastTick.z = this.thisTick.z;

@@ -52,16 +52,17 @@ export default class AMapScene {
         ];
         let height = 100;
         let width = 100;
-        let color = [0.506, 0.518, 0.729, 1];
+        let color = [0.878, 0.757, 0.416, 1];
         let line = this.objBorder(points, height, width, color);
 
         // ==prism
         for (let i = 0; i < 7; i++) {
-            let prism = (this.models["prism"] = this.Obj(
+            let h = 700 + 700 * Math.random();
+            let prism = (this.models[`prism${i}`] = this.Obj(
                 makePrismOrigin(
                     3 + parseInt(2 * Math.random()),
-                    -700 - 700 * Math.random(),
-                    80,
+                    -h,
+                    200,
                     [1, 0.843, 0.643, 0.8],
                     (x, y, z) => {
                         let c1 = [0.094, 0.271, 0.384, 0.8];
@@ -70,11 +71,13 @@ export default class AMapScene {
                     }
                 )
             ));
-            prism.position([
+            let pos = [
                 lng + (Math.random() * 2 - 1) * 0.004,
                 lat + (Math.random() * 2 - 1) * 0.004
-            ]);
+            ];
+            prism.position(pos);
             prism.animeRZ = new recAnimi(
+                false,
                 prism,
                 (obj, result) => {
                     obj.rotateZ(result[2]);
@@ -86,37 +89,51 @@ export default class AMapScene {
                 undefined,
                 "normal"
             );
-            prism.scale(1, 1, 0.1);
+            prism.scale(1, 1, 0.01);
             prism.animeShow = new recAnimi(
+                true,
                 prism,
                 (obj, result) => {
-                    obj.scale(1 + result[0], 1 + result[1], 1 + result[2]);
+                    obj.scale(result[0], result[1], result[2]);
                 },
                 1000,
-                [0, 0, 2.5],
+                [1, 1, 100],
                 3000,
                 false,
                 "easeOutCubic",
                 "normal"
             );
+            let text = (this.models[`text${i}`] = new this.AMap.Text({
+                text: `数据${i}`,
+                position: pos,
+                height: h,
+                map: this.map,
+                style: {
+                    "background-color": "rgba(0,0,0,0)",
+                    "border-color": "rgba(0,0,0,0)",
+                    color: "white",
+                    "font-size": "12px"
+                }
+            }));
         }
 
         // dots
         for (let i = 0; i < 30; i++) {
             let dot = (this.models[`dot${i}`] = this.Obj(
-                makeDotOrigin(-20, 150, [0.878, 0.757, 0.416, 0.8])
+                makeDotOrigin(-20, 150, [0.506, 0.518, 0.729, 0.8])
             ));
             dot.position([
                 lng + (Math.random() * 2 - 1) * 0.01,
                 lat + (Math.random() * 2 - 1) * 0.01
             ]);
             dot.anime = new recAnimi(
+                true,
                 dot,
                 (obj, result) => {
-                    obj.scale(1 + result[0], 1 + result[1], 1 + result[2]);
+                    obj.scale(result[0], result[1], result[2]);
                 },
                 500,
-                [0.2, 0.2, 0],
+                [1.2, 1.2, 1],
                 500 + Math.random() * 500,
                 true
             );
