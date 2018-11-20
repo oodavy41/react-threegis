@@ -26,9 +26,15 @@ export default class AMapScene {
         if (!this.animeLoop) {
             this.AMap.Util.cancelAnimFrame(this.animeLoop);
         }
-        this.animeLoop = this.AMap.Util.requestAnimFrame(this.update());
+        this.animeLoop = this.AMap.Util.requestAnimFrame(() => {
+            this.update();
+        });
     }
     reset(data) {
+        for (let key in this.models) {
+            this.object3Dlayer.remove(this.models[key]);
+        }
+        this.models = [];
         this.data = data;
         this.setup(data);
     }
