@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 import Geomentry from "./Geometry";
 import { loadMap } from "react-amap-next/lib/api";
@@ -14,6 +13,7 @@ class View extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: props.data,
             ready: false,
             AMap: null,
             // options
@@ -45,7 +45,68 @@ class View extends React.Component {
             this.setState({ AMap: AMap, ready: true });
 
             let scene = new AMapScene(AMap, this.Map);
-
+            let data = [];
+            for (let i = 0; i < 30; i++) {
+                let pos = [
+                    121.459898 + (Math.random() * 2 - 1) * 0.004,
+                    31.308498 + (Math.random() * 2 - 1) * 0.004
+                ];
+                data.push({
+                    type: "dot",
+                    height: 1,
+                    radius: 100,
+                    color: [0.427, 0.322, 0.016, 0.8],
+                    position: pos,
+                    anime: Math.random() > 0.2
+                });
+            }
+            for (let i = 0; i < 15; i++) {
+                let pos = [
+                    121.459898 + (Math.random() * 2 - 1) * 0.004,
+                    31.308498 + (Math.random() * 2 - 1) * 0.004
+                ];
+                let h = 700 + 700 * Math.random();
+                data.push({
+                    type: "prism",
+                    position: pos,
+                    height: h,
+                    radius: 120,
+                    segment: 4,
+                    colorFun: (x, y, z) => {
+                        let c1 = [0.094, 0.271, 0.384, 0.8];
+                        let c2 = [0.451, 0.588, 0.678, 0.8];
+                        return z < -700 ? c2 : c1;
+                    },
+                    enterAnime: {
+                        duration: 5000,
+                        wait: 5000,
+                        easing: "easeOutCubic",
+                        direction: "normal"
+                    },
+                    name: `test${i}`
+                });
+            }
+            data.push({
+                type: "border",
+                points: [
+                    [121.463503, 31.306114],
+                    [121.463782, 31.304666],
+                    [121.455328, 31.303346],
+                    [121.455199, 31.313502],
+                    [121.455864, 31.316766],
+                    [121.4558, 31.320679],
+                    [121.457098, 31.320954],
+                    [121.465316, 31.321422],
+                    [121.465016, 31.319094],
+                    [121.468202, 31.319433],
+                    [121.468363, 31.316903],
+                    [121.467709, 31.306435]
+                ],
+                height: 10,
+                width: 100,
+                color: [0.333, 0.345, 0.608, 1]
+            });
+            scene.data = data;
             scene.RUN();
         });
     }
@@ -58,7 +119,7 @@ class View extends React.Component {
                         this.Map = mine;
                     }}
                     AMap={this.state.AMap}
-                    style={{ width: "600px", height: "600px" }}
+                    style={{ width: "800px", height: "450px" }}
                     options={this.state}
                     events={{}}
                 />
@@ -69,7 +130,10 @@ class View extends React.Component {
     }
 }
 
-ReactDOM.render(<View />, document.getElementById("root"));
+ReactDOM.render(
+    <View style={{ width: "100%", height: "100%" }} />,
+    document.getElementById("root")
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

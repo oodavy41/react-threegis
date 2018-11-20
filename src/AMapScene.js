@@ -1,11 +1,14 @@
-import { makeLine, makePanel, makePrismOrigin, makeDotOrigin } from "./GLMesh";
+import { makeLine, makePanel, makeDot, makePrism } from "./GLMesh";
 import { recAnimi } from "./animateObj";
 import meshBuilder from "./threeMesh";
+import { aniType } from "./threeObj";
 
 export default class AMapScene {
     models = {};
     map = null;
     AMap = null;
+    data = null;
+    animeLoop = 0;
     constructor(AMap, map) {
         this.map = map;
         this.AMap = AMap;
@@ -18,126 +21,224 @@ export default class AMapScene {
             this.map.getCenter(),
             this.tranO(this.map.getCenter())
         );
-        this.setup();
+        this.setup(this.data);
 
-        this.update();
+        if (!this.animeLoop) {
+            this.AMap.Util.cancelAnimFrame(this.animeLoop);
+        }
+        this.animeLoop = this.AMap.Util.requestAnimFrame(this.update());
+    }
+    reset(data) {
+        this.data = data;
+        this.setup(data);
     }
     tranO(pos) {
         return this.map.lngLatToGeodeticCoord(pos);
     }
-    setup() {
+    setup(data) {
+        this.models = {};
         let { lng, lat } = this.map.getCenter();
-
-        let p1points = [
-            [121.456256, 31.310258],
-            [121.458214, 31.31122],
-            [121.459351, 31.309905],
-            [121.45713, 31.308851]
-        ];
-        let panel = this.objPanel(p1points, 1500, [0.7, 0.6, 0.5, 0.9]);
-        // == border
-        let points = [
-            [121.463503, 31.306114],
-            [121.463782, 31.304666],
-            [121.455328, 31.303346],
-            [121.455199, 31.313502],
-            [121.455864, 31.316766],
-            [121.4558, 31.320679],
-            [121.457098, 31.320954],
-            [121.465316, 31.321422],
-            [121.465016, 31.319094],
-            [121.468202, 31.319433],
-            [121.468363, 31.316903],
-            [121.467709, 31.306435]
-        ];
-        let height = 100;
-        let width = 100;
-        let color = [0.878, 0.757, 0.416, 1];
-        let line = this.objBorder(points, height, width, color);
-
-        // ==prism
-        for (let i = 0; i < 7; i++) {
-            let h = 700 + 700 * Math.random();
-            let prism = (this.models[`prism${i}`] = this.Obj(
-                makePrismOrigin(
-                    3 + parseInt(2 * Math.random()),
-                    -h,
-                    200,
-                    [1, 0.843, 0.643, 0.8],
-                    (x, y, z) => {
-                        let c1 = [0.094, 0.271, 0.384, 0.8];
-                        let c2 = [0.451, 0.588, 0.678, 0.8];
-                        return z < -700 ? c2 : c1;
-                    }
-                )
-            ));
-            let pos = [
-                lng + (Math.random() * 2 - 1) * 0.004,
-                lat + (Math.random() * 2 - 1) * 0.004
-            ];
-            prism.position(pos);
-            prism.animeRZ = new recAnimi(
-                false,
-                prism,
-                (obj, result) => {
-                    obj.rotateZ(result[2]);
-                },
-                20000,
-                [0, 0, 360],
-                0,
-                true,
-                undefined,
-                "normal"
-            );
-            prism.scale(1, 1, 0.01);
-            prism.animeShow = new recAnimi(
-                true,
-                prism,
-                (obj, result) => {
-                    obj.scale(result[0], result[1], result[2]);
-                },
-                1000,
-                [1, 1, 100],
-                3000,
-                false,
-                "easeOutCubic",
-                "normal"
-            );
-            let text = (this.models[`text${i}`] = new this.AMap.Text({
-                text: `数据${i}`,
-                position: pos,
-                height: h,
-                map: this.map,
-                style: {
-                    "background-color": "rgba(0,0,0,0)",
-                    "border-color": "rgba(0,0,0,0)",
-                    color: "white",
-                    "font-size": "12px"
+        data &&
+            data.forEach(e => {
+                switch (e.type) {
+                    case "dot":
+                        let dot = this.Obj(
+                            makeDot(e.height, e.radius, e.color, e.colorFun)
+                        );
+                        dot.position(e.position);
+                        if (e.anime) {
+                            dot.anime = new recAnimi(
+                                true,
+                                dot,
+                                (obj, result) => {
+                                    obj.scale(result[0], result[1], result[2]);
+                                },
+                                500,
+                                [1.2, 1.2, 1],
+                                500 + Math.random() * 500,
+                                true
+                            );
+                        }
+                        this.models[`dot${e}`] = dot;
+                        break;
+                    case "border":
+                        let line = this.objBorder(
+                            e.points,
+                            e.height,
+                            e.width,
+                            e.color
+                        );
+                        this.models[`border${e}`] = line;
+                        break;
+                    case "prism":
+                        let h = e.height;
+                        let prism = this.Obj(
+                            makePrism(e.segment, h, e.radius, e.color, e.colorFun)
+                        );
+                        let pos = e.position;
+                        prism.position(pos);
+                        if (e.enterAnime) {
+                            prism.scale(1, 1, 0.01);
+                            prism.animeShow = new recAnimi(
+                                true,
+                                prism,
+                                (obj, result) => {
+                                    obj.scale(result[0], result[1], result[2]);
+                                },
+                                e.enterAnime.duration,
+                                [1, 1, 100],
+                                e.enterAnime.wait,
+                                false,
+                                e.enterAnime.easing,
+                                e.enterAnime.direction
+                            );
+                        }
+                        if (e.rotateAnime) {
+                            prism.animeRZ = new recAnimi(
+                                false,
+                                prism,
+                                (obj, result) => {
+                                    obj.rotateZ(result[2]);
+                                },
+                                e.rotateAnime.duration,
+                                [0, 0, 360],
+                                e.rotateAnime.wait,
+                                true,
+                                undefined,
+                                "normal"
+                            );
+                        }
+                        this.models[`text${e.name}`] = new this.AMap.Text({
+                            text: e.name,
+                            position: pos,
+                            height: h,
+                            map: this.map,
+                            style: {
+                                "background-color": "rgba(0,0,0,0)",
+                                "border-color": "rgba(0,0,0,0)",
+                                color: "white",
+                                "font-size": "12px"
+                            }
+                        });
+                        this.models[`prism${e.name}`] = prism;
+                        break;
+                    case "panel":
+                        let panel = this.objPanel(e.points, e.height, e.color);
+                        this.models[`panel${e}`] = panel;
+                        break;
                 }
-            }));
-        }
+            });
 
-        // dots
-        for (let i = 0; i < 30; i++) {
-            let dot = (this.models[`dot${i}`] = this.Obj(
-                makeDotOrigin(-20, 150, [0.506, 0.518, 0.729, 0.8])
-            ));
-            dot.position([
-                lng + (Math.random() * 2 - 1) * 0.01,
-                lat + (Math.random() * 2 - 1) * 0.01
-            ]);
-            dot.anime = new recAnimi(
-                true,
-                dot,
-                (obj, result) => {
-                    obj.scale(result[0], result[1], result[2]);
-                },
-                500,
-                [1.2, 1.2, 1],
-                500 + Math.random() * 500,
-                true
-            );
-        }
+        // let p1points = [
+        //     [121.456256, 31.310258],
+        //     [121.458214, 31.31122],
+        //     [121.459351, 31.309905],
+        //     [121.45713, 31.308851]
+        // ];
+        // let panel = this.objPanel(p1points, 1500, [0.7, 0.6, 0.5, 0.9]);
+        // // == border
+        // let points = [
+        //     [121.463503, 31.306114],
+        //     [121.463782, 31.304666],
+        //     [121.455328, 31.303346],
+        //     [121.455199, 31.313502],
+        //     [121.455864, 31.316766],
+        //     [121.4558, 31.320679],
+        //     [121.457098, 31.320954],
+        //     [121.465316, 31.321422],
+        //     [121.465016, 31.319094],
+        //     [121.468202, 31.319433],
+        //     [121.468363, 31.316903],
+        //     [121.467709, 31.306435]
+        // ];
+        // let height = 100;
+        // let width = 100;
+        // let color = [0.333, 0.345, 0.608, 1];
+        // let line = this.objBorder(points, height, width, color);
+
+        // // ==prism
+        // for (let i = 0; i < 7; i++) {
+        //     let h = 700 + 700 * Math.random();
+        //     let prism = (this.models[`prism${i}`] = this.Obj(
+        //         makePrism(
+        //             3 + parseInt(2 * Math.random()),
+        //             h,
+        //             200,
+        //             [1, 0.843, 0.643, 0.8],
+        //             (x, y, z) => {
+        //                 let c1 = [0.094, 0.271, 0.384, 0.8];
+        //                 let c2 = [0.451, 0.588, 0.678, 0.8];
+        //                 return z < -700 ? c2 : c1;
+        //             }
+        //         )
+        //     ));
+        //     let pos = [
+        //         lng + (Math.random() * 2 - 1) * 0.004,
+        //         lat + (Math.random() * 2 - 1) * 0.004
+        //     ];
+        //     prism.position(pos);
+        //     prism.animeRZ = new recAnimi(
+        //         false,
+        //         prism,
+        //         (obj, result) => {
+        //             obj.rotateZ(result[2]);
+        //         },
+        //         20000,
+        //         [0, 0, 360],
+        //         0,
+        //         true,
+        //         undefined,
+        //         "normal"
+        //     );
+        //     prism.scale(1, 1, 0.01);
+        //     prism.animeShow = new recAnimi(
+        //         true,
+        //         prism,
+        //         (obj, result) => {
+        //             obj.scale(result[0], result[1], result[2]);
+        //         },
+        //         1000,
+        //         [1, 1, 100],
+        //         3000,
+        //         false,
+        //         "easeOutCubic",
+        //         "normal"
+        //     );
+        //     let text = (this.models[`text${i}`] = new this.AMap.Text({
+        //         text: `数据${i}`,
+        //         position: pos,
+        //         height: h,
+        //         map: this.map,
+        //         style: {
+        //             "background-color": "rgba(0,0,0,0)",
+        //             "border-color": "rgba(0,0,0,0)",
+        //             color: "white",
+        //             "font-size": "12px"
+        //         }
+        //     }));
+        // }
+
+        // // dots
+        // for (let i = 0; i < 30; i++) {
+        //     let dot = (this.models[`dot${i}`] = this.Obj(
+        //         makeDot(20, 150, [0.878, 0.757, 0.416, 0.8])
+        //     ));
+        //     dot.position([
+        //         lng + (Math.random() * 2 - 1) * 0.01,
+        //         lat + (Math.random() * 2 - 1) * 0.01
+        //     ]);
+        //     dot.anime = new recAnimi(
+        //         true,
+        //         dot,
+        //         (obj, result) => {
+        //             obj.scale(result[0], result[1], result[2]);
+        //         },
+        //         500,
+        //         [1.2, 1.2, 1],
+        //         500 + Math.random() * 500,
+        //         true
+        //     );
+        // }
     }
     update() {
         // animation

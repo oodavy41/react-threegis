@@ -71,13 +71,8 @@ export function makePanel(points, color, colorFun = undefined) {
     return panelGeomentry;
 }
 
-export function makePrismOrigin(
-    segment,
-    height,
-    radius,
-    color,
-    colorFun = undefined
-) {
+export function makePrism(segment, height, radius, color, colorFun = undefined) {
+    height *= -1;
     let geometry = { vertices: [], faces: [], colors: [] };
     let verticesLength = segment * 2;
     let path = [];
@@ -110,27 +105,16 @@ export function makePrismOrigin(
     // top panel
     let offset = segment * 2;
     for (let i = 0; i < segment; i += 1) {
-        if (Array.isArray(color[0])) {
-            geometry.vertices.push(path[i][0], path[i][1], height);
-            if (colorFun) {
-                geometry.colors.push(...colorFun(path[i][0], path[i][1], height));
-            } else {
-                geometry.colors.push(color);
-            }
-            if (i !== 0 && i !== segment - 1) {
-                geometry.faces.push(offset, offset + i + 1, offset + i);
-            }
-        } else {
-            if (i !== 0 && i !== segment - 1) {
-                geometry.faces.push(1, i * 2 + 1, i * 2 + 3);
-            }
+        if (i !== 0 && i !== segment - 1) {
+            geometry.faces.push(1, i * 2 + 1, i * 2 + 3);
         }
     }
 
     return geometry;
 }
 
-export function makeDotOrigin(height, radius, color, colorFun = undefined) {
+export function makeDot(height, radius, color, colorFun = undefined) {
+    height *= -1;
     let segment = 30;
     let geometry = { vertices: [], faces: [], colors: [] };
     geometry.vertices.push(0, 0, height);
