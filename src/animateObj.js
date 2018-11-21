@@ -89,62 +89,99 @@ export class colAnimi {
     }
 }
 
-export class recAnimi {
-    thisTick = { x: 0, y: 0, z: 0 };
-    lastTick = { x: 0, y: 0, z: 0 };
+class recAnime {
+    parent = null;
+    anime = null;
     result = [0, 0, 0];
-    isScale = false;
-    constructor(
-        isScale,
-        obj,
-        animeFun,
-        duration,
-        target,
-        wait = 0,
-        loop = false,
-        easing = "linear",
-        direction = "alternate",
-        autoplay = true
-    ) {
-        this.isScale = isScale;
-        if (isScale) {
-            this.thisTick = { x: 1, y: 1, z: 1 };
-            this.lastTick = { x: 1, y: 1, z: 1 };
-        } else {
-            this.thisTick = { x: 0, y: 0, z: 0 };
-            this.lastTick = { x: 0, y: 0, z: 0 };
-        }
+    thisTick;
+    lastTick;
+    constructor(obj, start, animeFun, animeArray) {
         this.parent = obj;
-        this.anime = anime({
-            targets: this.thisTick,
-            x: target[0],
-            y: target[1],
-            z: target[2],
-            easing: easing,
-            direction: direction,
-            loop: loop,
-            duration: duration,
-            delay: wait
-        });
-        this.anime.autoplay = autoplay;
-        if (animeFun) {
-            this.anime.update = () => animeFun(obj, this.tick());
-        }
+        this.array = animeArray;
     }
 
-    tick() {
-        if (this.isScale) {
-            this.result[0] = this.thisTick.x / this.lastTick.x;
-            this.result[1] = this.thisTick.y / this.lastTick.y;
-            this.result[2] = this.thisTick.z / this.lastTick.z;
-        } else {
-            this.result[0] = this.thisTick.x - this.lastTick.x;
-            this.result[1] = this.thisTick.y - this.lastTick.y;
-            this.result[2] = this.thisTick.z - this.lastTick.z;
+    nextFun(animeFun) {
+        let meta = this.array.shift();
+        if (meta) {
+            this.anime = anime({
+                targets: this.thisTick,
+                x: meta.target[0],
+                y: meta.target[1],
+                z: meta.target[2],
+                easing: meta.easing || "linear",
+                direction: meta.direction || "alternate",
+                loop: meta.loop || false,
+                duration: meta.duration,
+                delay: meta.wait || 0,
+                autoplay: meta.autoplay || true,
+                update: () => animeFun(this.parent, this.tick()),
+                complete: () => this.nextFun(animeFun)
+            });
         }
+    }
+    tick() {
         this.lastTick.x = this.thisTick.x;
         this.lastTick.y = this.thisTick.y;
         this.lastTick.z = this.thisTick.z;
+        return this.result;
+    }
+}
+
+export class recAnimeScl extends recAnime {
+    constructor(obj, start, animeFun, animeArray) {
+        let { x, y, z } = (start && { x: start[0], y: start[1], z: start[2] }) || {
+            x: 1,
+            y: 1,
+            z: 1
+        };
+        super(obj, start, animeFun, animeArray);
+        this.thisTick = { x, y, z };
+        this.lastTick = { x, y, z };
+        this.nextFun(animeFun);
+    }
+
+    tick() {
+        this.result[0] = this.thisTick.x / this.lastTick.x;
+        this.result[1] = this.thisTick.y / this.lastTick.y;
+        this.result[2] = this.thisTick.z / this.lastTick.z;
+        return super.tick();
+    }
+}
+
+export class recAnimeRot extends recAnime {
+    constructor(obj, start, animeFun, animeArray) {
+        let { x, y, z } = (start && { x: start[0], y: start[1], z: start[2] }) || {
+            x: 0,
+            y: 0,
+            z: 0
+        };
+        super(obj, start, animeFun, animeArray);
+        this.thisTick = { x, y, z };
+        this.lastTick = { x, y, z };
+        this.nextFun(animeFun);
+    }
+
+    tick() {
+        this.result[0] = this.thisTick.x - this.lastTick.x;
+        this.result[1] = this.thisTick.y - this.lastTick.y;
+        this.result[2] = this.thisTick.z - this.lastTick.z;
+        return super.tick();
+    }
+}
+export class recAnimePos extends recAnime {
+    constructor(obj, start, animeFun, animeArray) {
+        if (!start) {
+            console.error("position anime must have start value");
+        }
+        super(obj, start, animeFun, animeArray);
+        this.thisTick = { x: start[0], y: start[1], z: start[2] };
+        this.nextFun(animeFun);
+    }
+
+    tick() {
+        this.result[0] = this.thisTick.x;
+        this.result[1] = this.thisTick.y;
+        this.result[2] = this.thisTick.z;
         return this.result;
     }
 }

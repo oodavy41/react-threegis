@@ -1,5 +1,5 @@
 import { makeLine, makePanel, makeDot, makePrism } from "./GLMesh";
-import { recAnimi } from "./animateObj";
+import { recAnimeScl, recAnimeRot, recAnimePos } from "./animateObj";
 import meshBuilder from "./threeMesh";
 import { aniType } from "./threeObj";
 
@@ -46,74 +46,26 @@ export default class AMapScene {
         let { lng, lat } = this.map.getCenter();
         data &&
             data.forEach(e => {
+                let obj;
                 switch (e.type) {
                     case "dot":
-                        let dot = this.Obj(
+                        obj = this.Obj(
                             makeDot(e.height, e.radius, e.color, e.colorFun)
                         );
-                        dot.position(e.position);
-                        if (e.anime) {
-                            dot.anime = new recAnimi(
-                                true,
-                                dot,
-                                (obj, result) => {
-                                    obj.scale(result[0], result[1], result[2]);
-                                },
-                                500,
-                                [1.2, 1.2, 1],
-                                500 + Math.random() * 500,
-                                true
-                            );
-                        }
-                        this.models[`dot${e}`] = dot;
+                        obj.position(e.position);
+                        this.models[`dot${e}`] = obj;
                         break;
                     case "border":
-                        let line = this.objBorder(
-                            e.points,
-                            e.height,
-                            e.width,
-                            e.color
-                        );
-                        this.models[`border${e}`] = line;
+                        obj = this.objBorder(e.points, e.height, e.width, e.color);
+                        this.models[`border${e}`] = obj;
                         break;
                     case "prism":
                         let h = e.height;
-                        let prism = this.Obj(
+                        obj = this.Obj(
                             makePrism(e.segment, h, e.radius, e.color, e.colorFun)
                         );
                         let pos = e.position;
-                        prism.position(pos);
-                        if (e.enterAnime) {
-                            prism.scale(1, 1, 0.01);
-                            prism.animeShow = new recAnimi(
-                                true,
-                                prism,
-                                (obj, result) => {
-                                    obj.scale(result[0], result[1], result[2]);
-                                },
-                                e.enterAnime.duration,
-                                [1, 1, 100],
-                                e.enterAnime.wait,
-                                false,
-                                e.enterAnime.easing,
-                                e.enterAnime.direction
-                            );
-                        }
-                        if (e.rotateAnime) {
-                            prism.animeRZ = new recAnimi(
-                                false,
-                                prism,
-                                (obj, result) => {
-                                    obj.rotateZ(result[2]);
-                                },
-                                e.rotateAnime.duration,
-                                [0, 0, 360],
-                                e.rotateAnime.wait,
-                                true,
-                                undefined,
-                                "normal"
-                            );
-                        }
+                        obj.position(pos);
                         this.models[`text${e.name}`] = new this.AMap.Text({
                             text: e.name,
                             position: pos,
@@ -126,12 +78,62 @@ export default class AMapScene {
                                 "font-size": "12px"
                             }
                         });
-                        this.models[`prism${e.name}`] = prism;
+                        this.models[`prism${e.name}`] = obj;
                         break;
                     case "panel":
-                        let panel = this.objPanel(e.points, e.height, e.color);
-                        this.models[`panel${e}`] = panel;
+                        obj = this.objPanel(e.points, e.height, e.color);
+                        this.models[`panel${e}`] = obj;
                         break;
+                }
+                if (e.scaleAnime) {
+                    e.scaleAnime.start &&
+                        obj.scale(
+                            e.scaleAnime.start[0],
+                            e.scaleAnime.start[1],
+                            e.scaleAnime.start[2]
+                        );
+                    obj.scaleAnime = new recAnimeScl(
+                        obj,
+                        e.scaleAnime.start,
+                        (obj, result) => {
+                            obj.scale(result[0], result[1], result[2]);
+                        },
+                        e.scaleAnime.array
+                    );
+                }
+                if (e.rotateAnime) {
+                    e.rotateAnime.start &&
+                        obj.scale(
+                            e.rotateAnime.start[0],
+                            e.rotateAnime.start[1],
+                            e.rotateAnime.start[2]
+                        );
+                    obj.rotateAnime = new recAnimeRot(
+                        obj,
+                        e.rotateAnime.start,
+                        (obj, result) => {
+                            obj.rotateX(result[0]);
+                            obj.rotateY(result[1]);
+                            obj.rotateZ(result[2]);
+                        },
+                        e.rotateAnime.array
+                    );
+                }
+                if (e.posAnime) {
+                    e.posAnime.start &&
+                        obj.position(
+                            e.posAnime.start[0],
+                            e.posAnime.start[1],
+                            e.posAnime.start[2]
+                        );
+                    obj.posAnime = new recAnimePos(
+                        obj,
+                        e.posAnime.start,
+                        (obj, result) => {
+                            obj.scale(result[0], result[1], result[2]);
+                        },
+                        e.posAnime.array
+                    );
                 }
             });
 
