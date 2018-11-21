@@ -95,7 +95,13 @@ class recAnime {
     result = [0, 0, 0];
     thisTick;
     lastTick;
-    constructor(obj, start, animeFun, animeArray) {
+
+    /**
+     *
+     * @param {AMap.Object3D.Mesh} obj
+     * @param {{target:number[],duration:number,easing?:string,direction?:string,loop?:boolean,wait?:number,autoplay?:boolean}[]} animeArray
+     */
+    constructor(obj, animeArray) {
         this.parent = obj;
         this.array = animeArray;
     }
@@ -134,7 +140,7 @@ export class recAnimeScl extends recAnime {
             y: 1,
             z: 1
         };
-        super(obj, start, animeFun, animeArray);
+        super(obj, animeArray);
         this.thisTick = { x, y, z };
         this.lastTick = { x, y, z };
         this.nextFun(animeFun);
@@ -155,7 +161,7 @@ export class recAnimeRot extends recAnime {
             y: 0,
             z: 0
         };
-        super(obj, start, animeFun, animeArray);
+        super(obj, animeArray);
         this.thisTick = { x, y, z };
         this.lastTick = { x, y, z };
         this.nextFun(animeFun);
@@ -173,7 +179,7 @@ export class recAnimePos extends recAnime {
         if (!start) {
             console.error("position anime must have start value");
         }
-        super(obj, start, animeFun, animeArray);
+        super(obj, animeArray);
         this.thisTick = { x: start[0], y: start[1], z: start[2] };
         this.nextFun(animeFun);
     }

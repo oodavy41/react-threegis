@@ -103,7 +103,6 @@ export function makePrism(segment, height, radius, color, colorFun = undefined) 
     }
 
     // top panel
-    let offset = segment * 2;
     for (let i = 0; i < segment; i += 1) {
         if (i !== 0 && i !== segment - 1) {
             geometry.faces.push(1, i * 2 + 1, i * 2 + 3);
