@@ -1,14 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
-import Geomentry from "./Geometry";
 import { loadMap } from "react-amap-next/lib/api";
-import * as PL from "react-amap-next/lib/Polyline";
 import Map from "react-amap-next/lib/Map";
 import Marker from "react-amap-next/lib/Marker";
 import { Path, Color, Texture } from "three";
 import AMapScene from "./AMapScene";
-import baseMapCamera from "./camera";
+import baseMapCamera from "./camera/camera";
 
 class View extends React.Component {
     constructor(props) {
@@ -27,7 +25,8 @@ class View extends React.Component {
             doubleClickZoom: false,
             expandZoomRange: false,
             showIndoorMap: false,
-            zooms: [16, 17],
+            zooms: [5, 17],
+            zoom: 16,
             pitch: 60,
             maxPitch: 180,
             rotation: 100,
@@ -163,7 +162,7 @@ class View extends React.Component {
                     [121.468363, 31.316903],
                     [121.467709, 31.306435]
                 ],
-                height: 10,
+                height: 100,
                 width: 100,
                 color: [0.333, 0.345, 0.608, 1]
             });

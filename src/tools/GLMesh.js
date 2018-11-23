@@ -43,13 +43,13 @@ export function makeLine(array, color, colorFun = undefined) {
                 lineGeomentry.colors.push(...colorFun(..._));
             }
         }
-        lineGeomentry.faces.push(pos, pos + 2, pos + 1, pos + 1, pos + 2, pos + 3);
+        lineGeomentry.faces.push(pos, pos + 1, pos + 2, pos + 1, pos + 3, pos + 2);
 
         for (let i = 0; i < 16; i++) {
             lineGeomentry.faces.push(
                 pos + 4,
-                i < 15 ? pos + 6 + i : pos + 5,
-                pos + 5 + i
+                pos + 5 + i,
+                i < 15 ? pos + 6 + i : pos + 5
             );
         }
     });
@@ -67,7 +67,7 @@ export function makePanel(points, color, colorFun = undefined) {
             panelGeomentry.colors.push(...colorFun(...e));
         }
     });
-    panelGeomentry.faces.push(0, 1, 2, 0, 2, 3);
+    panelGeomentry.faces.push(0, 2, 1, 0, 3, 2);
     return panelGeomentry;
 }
 
@@ -98,14 +98,14 @@ export function makePrism(segment, height, radius, color, colorFun = undefined) 
         let nextB = (bottom + 2) % verticesLength;
         let nextT = (bottom + 3) % verticesLength;
 
-        geometry.faces.push(bottom, nextT, top);
-        geometry.faces.push(bottom, nextB, nextT);
+        geometry.faces.push(bottom, top, nextT);
+        geometry.faces.push(bottom, nextT, nextB);
     }
 
     // top panel
     for (let i = 0; i < segment; i += 1) {
         if (i !== 0 && i !== segment - 1) {
-            geometry.faces.push(1, i * 2 + 1, i * 2 + 3);
+            geometry.faces.push(1, i * 2 + 3, i * 2 + 1);
         }
     }
 
@@ -134,7 +134,7 @@ export function makeDot(height, radius, color, colorFun = undefined) {
             geometry.colors.push(...color);
         }
 
-        geometry.faces.push(0, i + 1, ((i + 1) % segment) + 1);
+        geometry.faces.push(0, ((i + 1) % segment) + 1, i + 1);
     }
 
     return geometry;

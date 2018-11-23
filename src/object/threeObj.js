@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import * as OBJLoader from "three-obj-loader";
-import { posAnimi, sclAnimi, colAnimi, rotAnimi } from "./animateObj";
+import { posAnimi, sclAnimi, colAnimi, rotAnimi } from "../anime/baseAnime";
 OBJLoader(THREE);
 
 export const aniType = {
