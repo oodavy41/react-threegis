@@ -1,0 +1,67 @@
+# DataJsonFormat
+
+-   ## **_斜粗体不可省略_**
+-   ## **_没有冒号是匿名 object_**
+
+---
+
+-   ROOT
+    -   mapOrigin: 地图初始状态 `{`
+        -   mapStyle: `string` 主题 url
+        -   center: `number[2]` 中心经纬度
+        -   resizeEnable: `boolean`
+        -   rotateEnable: `boolean`
+        -   zoomEnable: `boolean`
+        -   doubleClickZoom: `boolean`
+        -   expandZoomRange: `boolean`
+        -   showIndoorMap: `boolean`
+        -   zooms: `number[2]` 缩放范围
+        -   zoom: `number` 初始缩放级数
+        -   pitch: `number` 视角仰角
+        -   maxPitch: `number` 最大仰角
+        -   rotation: `number` 视角旋转（顺时针）
+    -   `}`
+    -   camera: `[`
+        -   相机动画关键帧 `{`
+            -   aim: `number[2]` 相机目标经纬度
+            -   pitch: `number` 仰角
+            -   rotate: `number` 顺时针转角
+            -   zoom: `number` 缩放
+            -   wait: `number` 动画等待时间（毫秒）
+            -   **_duration_**: `number` 动画持续时间（毫秒）
+        -   `},` ...
+    -   `]`
+    -   objData: 实体配置数组 `[`
+        -   单个实体数据 `{`
+            -   **_type_**: `string` ="dot" 圆点类型
+            -   **_height_**: `number` 圆点高度
+            -   **_radius_**: `number` 原点半径
+            -   **_color_** | **_colorFun_**: `number[4]` RGBA
+                | `function(x,y,z)=>number[4]` 传入点位置，传出颜色的函数
+            -   **_position_**: `number[2]` 原点经纬度
+            -   scaleAnime: 缩放动画序列 `{`
+                -   start : `number[3]` 初始值
+                -   array : 关键帧序列 `[`
+                    -   关键帧 `{`
+                        -   **_target_**: `number[3]` xyz 动画目标
+                        -   wait: `number` 等待时间按
+                        -   duration: `number` 持续时间
+                        -   loop: `boolean` 循环开关
+                        -   easing: `string` 运动曲线,详见[easing functions](https://github.com/juliangarnier/anime/#easing-functions)
+                        -   direction: `string` 播放方向 'normal', 'reverse', 'alternate'
+                    -   `}`
+                -   `]`
+            -   `}`
+            -   rotateAnime: 旋转动画序列 `{`
+                -   同上
+            -   `}`
+            -   posAnime: 旋转动画序列 `{`
+                -   同上
+            -   `}`
+        -   `},`
+        -   实体数据 `{`
+            -   type: `string` ="prism" 棱柱类型
+            -   segment: `number` 棱柱边数
+            -
+        -   `}`
+    -   `]`
