@@ -32,7 +32,7 @@
         -   `},` ...
     -   `]`
     -   objData: 实体配置数组 `[`
-        -   单个实体数据 `{`
+        -   实体数据 dot `{`
             -   **_type_**: `string` ="dot" 圆点类型
             -   **_height_**: `number` 圆点高度
             -   **_radius_**: `number` 原点半径
@@ -59,9 +59,23 @@
                 -   同上
             -   `}`
         -   `},`
-        -   实体数据 `{`
+        -   实体数据 prism `{`
             -   type: `string` ="prism" 棱柱类型
-            -   segment: `number` 棱柱边数
-            -
+            -   **_segment_**: `number` 棱柱边数
+            -   **_name_**: `string` 棱柱名字，显示在顶部
+            -   同上
+        -   `}`
+        -   实体数据 border `{`
+            -   **_type_** :`string` ="border" 闭合线框
+            -   **_points_** : `number[][2]` 线框节点序列（顺时针）
+            -   **_height_** : `number` 线框高度
+            -   **_width_** : `number` 线框宽度
+            -   **_color_** : `number[4]` 线框颜色
+        -   `}`
+        -   实体数据 panel `{`
+            -   **_type_** :`string` ="panel" 四边形
+            -   **_points_** : `number[4][2]` 四角位置
+            -   **_height_** : `number` 四边形高度
+            -   **_color_** : `number[4]` 颜色
         -   `}`
     -   `]`
