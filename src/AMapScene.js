@@ -120,9 +120,14 @@ export default class AMapScene {
     }
     update() {
         // animation
+        let pos = 0;
         for (let key in this.UpdtObjs) {
             let m = this.UpdtObjs[key];
             m.update();
+            pos++;
+            if (pos % 7 == 0) {
+                m.setAnimePos([]);
+            }
         }
         // == end ==
         this.AMap.Util.requestAnimFrame(() => {

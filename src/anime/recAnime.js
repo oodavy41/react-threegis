@@ -26,7 +26,7 @@ export default class recAnime {
                 autoplay: meta.autoplay || true,
                 complete: () => {
                     this._nextFun();
-                    console.log("anime update", this.target);
+                    //console.log("anime update", this.target);
                 }
             });
         }

@@ -27,7 +27,6 @@ export default class MainCanvas extends React.Component {
             pitch: 60,
             maxPitch: 180,
             rotation: 100,
-
             buildingAnimation: true
         };
         this.Map = null;
