@@ -15,7 +15,7 @@
         -   doubleClickZoom: `boolean` (false)
         -   expandZoomRange: `boolean` (false)
         -   showIndoorMap: `boolean` (false)
-        -   zooms: `number[2]` (5, 17)缩放范围
+        -   zooms: `number[2]` (5, 17) 缩放范围
         -   zoom: `number` (16)初始缩放级数
         -   pitch: `number` (60)视角仰角
         -   maxPitch: `number` (180)最大仰角
@@ -68,7 +68,7 @@
                 -   start : `number[3]` (0,0,0) 初始值
                 -   array : 关键帧序列 `[`
                     -   关键帧 `{`
-                        -   **_target_**: `number[3]` xyz 动画目标
+                        -   **_target_**: `number[3]` (0,0,0) xyz 动画目标
                         -   wait: `number` (0) 等待时间按
                         -   duration: `number` (0) 持续时间
                         -   loop: `boolean` (false) 循环开关

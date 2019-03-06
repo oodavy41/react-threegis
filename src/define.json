@@ -1,0 +1,86 @@
+{
+    "groupName": "图表类",
+    "tileMetas": [
+        {
+            "name": "地图属性",
+            "type": "mapOrigin",
+            "multiple": "1",
+            "defaultValue": {
+                "tileType": "mapOrigin",
+                "displayName": "Map",
+                "dataQuery": [121.459898, 31.308498]
+            },
+            "mandatory": true
+        },
+        {
+            "name": "柱状图数据",
+            "type": "prism",
+            "multiple": "999",
+            "defaultValue": {
+                "tileType": "prism",
+                "displayName": "prism",
+                "dataQuery": [121.459898, 31.308498, 500, 4, 120, "name"]
+            },
+            "mandatory": false
+        },
+        {
+            "name": "圆点数据",
+            "type": "dot",
+            "multiple": "999",
+            "defaultValue": {
+                "tileType": "dot",
+                "displayName": "dot",
+                "dataQuery": [121.459898, 31.308498]
+            },
+            "mandatory": false
+        },
+        {
+            "name": "边界数据",
+            "type": "border",
+            "multiple": "10",
+            "defaultValue": {
+                "tileType": "border",
+                "displayName": "border",
+                "dataQuery": [
+                    [121.463503, 31.306114],
+                    [121.463782, 31.304666],
+                    [121.455328, 31.303346],
+                    [121.455199, 31.313502],
+                    [121.455864, 31.316766],
+                    [121.4558, 31.320679],
+                    [121.457098, 31.320954],
+                    [121.465316, 31.321422],
+                    [121.465016, 31.319094],
+                    [121.468202, 31.319433],
+                    [121.468363, 31.316903],
+                    [121.467709, 31.306435]
+                ]
+            },
+            "mandatory": false
+        },
+        {
+            "name": "平面数据",
+            "type": "panel",
+            "multiple": "999",
+            "defaultValue": {
+                "tileType": "panel",
+                "displayName": "panel",
+                "dataQuery": [
+                    [121.455328, 31.303346],
+                    [121.455199, 31.313502],
+                    [121.455864, 31.316766],
+                    [121.4558, 31.320679]
+                ]
+            },
+            "mandatory": false
+        }
+    ],
+    "name": "地图数据",
+    "typeName": "地图",
+    "thumbImg": "/img/wgtmpl_thumb/line1.png",
+    "description": "地图数据",
+    "subType": "basic",
+    "styles": "",
+    "type": "arigisMap",
+    "dataCount": "1440"
+}

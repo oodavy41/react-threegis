@@ -25,9 +25,11 @@ function toObj(lines) {
         if (start) {
             let objType = element.match(/`(\S+)`/);
             let objName = element.match(/\-*(\S+)\:/);
-            let objValue = element.match(/:(\(\S+\))/);
+            let objValue = element.match(/`*\(((\S|\s)+)\)/);
             objType = objType && objType[1];
             objName = objName && objName[1];
+            objValue = objValue && objValue[1];
+            console.log(objName, objValue);
             let _t;
             switch (objType) {
                 case "{":
@@ -70,7 +72,7 @@ function typeGen(type, value) {
             retobj = value; //["dot", "prism", "border", "panel"];
             break;
         case "number":
-            retobj = value;
+            retobj = +value;
             break;
         case "url":
             retobj = value;
